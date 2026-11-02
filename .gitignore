@@ -1,0 +1,35 @@
+## .NET build artifacts
+bin/
+obj/
+out/
+publish/
+
+## IDE and user settings
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Test and coverage results
+TestResults/
+coverage/
+*.coverage
+*.trx
+
+## Logs and temporary files
+*.log
+*.tmp
+*.bak
+
+## OS files
+.DS_Store
+Thumbs.db
+
+## Local databases and secrets
+*.db
+*.sqlite
+*.pfx
+.env
