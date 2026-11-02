@@ -698,7 +698,8 @@ public class Product
   <pre><code>&lt;a asp-controller="Product" asp-action="Details"
    asp-route-id="@product.Id"&gt;Подробнее&lt;/a&gt;
 
-&lt;input asp-for="Price" class="form-control" type="number" step="0.01" /&gt;
+&lt;input asp-for="Price" class="form-control" type="text"
+       inputmode="decimal" placeholder="0,00" /&gt;
 &lt;span asp-validation-for="Price" class="text-danger small"&gt;&lt;/span&gt;</code></pre>
 </section>
 
@@ -748,8 +749,7 @@ public IActionResult Create(Product product)
     Поля формы помечены атрибутами <code>[Required]</code>, <code>[StringLength]</code>,
     <code>[Range]</code>. На клиенте работает jQuery Validation, на сервере — повторная
     проверка модели. Дополнительно реализован <code>InvariantDecimalModelBinder</code>:
-    HTML-поле <code>type="number"</code> отправляет точку, а пользователь может ввести
-    запятую, поэтому цена принимается в обоих форматах.
+    цена принимается и с точкой, и с запятой, независимо от настроек культуры и браузера.
   </p>
 
   <h3>Редактирование и удаление</h3>

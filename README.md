@@ -69,6 +69,8 @@ wt-lab4-4mvc-ostashevskaya/
 │   └── ProductRepository.cs
 ├── Helpers/
 │   └── DisplayHelper.cs
+├── Infrastructure/
+│   └── InvariantDecimalModelBinder.cs
 ├── Models/
 │   ├── HomeViewModel.cs
 │   ├── Product.cs
@@ -91,6 +93,7 @@ wt-lab4-4mvc-ostashevskaya/
 ├── wwwroot/
 │   ├── css/site.css
 │   ├── images/warehouse.svg
+│   ├── js/site.js
 │   └── lib/...
 ├── Dockerfile
 ├── render.yaml
@@ -186,7 +189,10 @@ Render автоматически запускает новый deployment по�
 ## Материалы отчёта
 
 - `docs/report.pdf` — отчёт по лабораторной работе;
-- `docs/screenshots/` — скриншоты работающего приложения и Docker-сборки.
+- `docs/screenshots/` — скриншоты локально запущенного приложения.
+
+Скриншоты Render Dashboard, Build Logs, Deploy Logs и опубликованного приложения
+добавляются после выполнения deployment в аккаунте Render.
 
 ## Примечание
 

@@ -1,4 +1,26 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿// Нормализация десятичного разделителя в полях ввода цены.
+// Сервер принимает и точку, и запятую, но jQuery Validation ожидает число
+// в формате с точкой, поэтому перед проверкой заменяем запятую на точку.
+document.addEventListener("DOMContentLoaded", function () {
+    var decimalInputs = document.querySelectorAll('input[inputmode="decimal"]');
 
-// Write your JavaScript code.
+    function normalize(input) {
+        if (!input.value.includes(",")) {
+            return;
+        }
+
+        var caret = input.selectionStart;
+        input.value = input.value.replace(",", ".");
+
+        if (caret !== null && typeof input.setSelectionRange === "function") {
+            input.setSelectionRange(caret, caret);
+        }
+    }
+
+    decimalInputs.forEach(function (input) {
+        normalize(input);
+        input.addEventListener("input", function () {
+            normalize(input);
+        });
+    });
+});
