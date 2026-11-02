@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+.git/
+.github/
+.vs/
+.vscode/
+*.user
+*.suo
+*.log
+TestResults/
+README.md
+docs/
+.DS_Store

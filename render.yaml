@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: wt-lab4-4mvc-ostashevskaya
+    runtime: docker
+    plan: free
+    branch: main
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
