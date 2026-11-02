@@ -6,16 +6,18 @@
 ## Репозиторий
 
 ```text
-https://github.com/<ваш-логин>/wt-lab4-4mvc-ostashevskaya
+https://github.com/odarya06/wt-lab4-4mvc-ostashevskaya
 ```
 
 ## Опубликованное приложение
 
 ```text
-https://<имя-сервиса>.onrender.com
+https://wt-lab4-4mvc-ostashevskaya.onrender.com
 ```
 
-> После выполнения деплоя замените две ссылки выше на реальные адреса.
+Сервис развёрнут на Render как **Docker Web Service** на бесплатном тарифе.
+Первый запрос после простоя может занять до минуты: free-инстанс засыпает
+при отсутствии активности.
 
 ## Предметная область
 
@@ -168,8 +170,8 @@ docker run --rm -p 10000:10000 -e PORT=10000 wt-lab4-4mvc-ostashevskaya
    - **Dockerfile Path:** `./Dockerfile`;
    - **Instance Type:** Free.
 4. Render сам передаст переменную `PORT`; приложение слушает `0.0.0.0:$PORT`.
-5. Дождитесь окончания Build Logs и Deploy Logs, откройте публичный URL вида
-   `https://<имя-сервиса>.onrender.com`.
+5. Дождитесь окончания Build Logs и Deploy Logs и откройте публичный URL
+   `https://wt-lab4-4mvc-ostashevskaya.onrender.com`.
 
 Альтернативно можно создать сервис из Blueprint `render.yaml`.
 
@@ -189,10 +191,8 @@ Render автоматически запускает новый deployment по�
 ## Материалы отчёта
 
 - `docs/report.pdf` — отчёт по лабораторной работе;
-- `docs/screenshots/` — скриншоты локально запущенного приложения.
-
-Скриншоты Render Dashboard, Build Logs, Deploy Logs и опубликованного приложения
-добавляются после выполнения deployment в аккаунте Render.
+- `docs/screenshots/` — скриншоты локального приложения, Render Dashboard,
+  Build Logs, Deploy Logs и опубликованного приложения.
 
 ## Примечание
 

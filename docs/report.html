@@ -311,11 +311,13 @@
     <li>Вывод</li>
     <li>Ссылки и материалы</li>
   </ol>
-  <div class="note" style="margin-top: 14mm">
-    <strong>Статус работы.</strong> Приложение полностью реализовано и проверено локально:
-    все страницы, GET/POST-операции, валидация, редактирование, удаление и обработка 404.
-    Dockerfile и конфигурация Render подготовлены. Для завершения публикации требуется
-    подключить личный аккаунт GitHub и Render — в разделе 11 приведены точные шаги.
+  <div class="success" style="margin-top: 14mm">
+    <strong>Статус работы.</strong> Приложение полностью реализовано, проверено локально
+    и опубликовано: все страницы, GET/POST-операции, валидация, редактирование, удаление
+    и обработка 404 работают. Код размещён на GitHub, Docker-образ собран на Render,
+    приложение доступно по адресу
+    <code>https://wt-lab4-4mvc-ostashevskaya.onrender.com</code>; ход публикации
+    описан в разделе 11.
   </div>
 </div>
 
@@ -942,12 +944,11 @@ PORT=10000 dotnet run
 docker build -t wt-lab4-4mvc-ostashevskaya .
 docker run --rm -p 10000:10000 -e PORT=10000 wt-lab4-4mvc-ostashevskaya</code></pre>
 
-  <div class="warning">
-    <strong>Примечание о среде выполнения.</strong> В среде, где готовился отчёт, не установлен
-    Docker/Colima, поэтому локальная сборка контейнера не выполнялась. Dockerfile проверен
-    структурно, а Release-сборка проекта успешно выполнена командой
-    <code>dotnet publish -c Release</code>. На Render этот же Dockerfile используется
-    для сборки образа; скриншоты Build Logs и Deploy Logs добавляются после подключения аккаунта.
+  <div class="success">
+    <strong>Проверка Docker.</strong> В локальной среде Docker/Colima не установлен, поэтому
+    контейнер не собирался локально. При этом Render успешно собрал образ по этому же
+    <code>Dockerfile</code> за 40,9 секунды, запустил контейнер и вывел приложение в интернет.
+    Ход сборки и запуска зафиксирован на скриншотах Build Logs и Deploy Logs в разделе 11.
   </div>
 </section>
 
@@ -963,7 +964,8 @@ docker run --rm -p 10000:10000 -e PORT=10000 wt-lab4-4mvc-ostashevskaya</code></
         <strong>Dockerfile Path: ./Dockerfile</strong>.</li>
     <li>Оставить переменную <code>PORT</code> управляемой Render (по умолчанию 10000).</li>
     <li>Нажать <strong>Deploy</strong> и дождаться успешной сборки и запуска.</li>
-    <li>Открыть публичный адрес <code>https://&lt;имя-сервиса&gt;.onrender.com</code>
+    <li>Открыть публичный адрес
+        <code>https://wt-lab4-4mvc-ostashevskaya.onrender.com</code>
         и проверить страницы <code>/</code>, <code>/Product/Index</code>,
         <code>/Product/Details/1</code>, <code>/Product/Create</code>,
         <code>/Product/Edit/1</code>.</li>
@@ -994,21 +996,48 @@ docker run --rm -p 10000:10000 -e PORT=10000 wt-lab4-4mvc-ostashevskaya</code></
   <table>
     <thead><tr><th>Этап</th><th>Статус</th><th>Комментарий</th></tr></thead>
     <tbody>
-      <tr><td>Git-репозиторий</td><td>Подготовлен локально</td><td>История из осмысленных коммитов</td></tr>
-      <tr><td>Dockerfile</td><td>Готов</td><td>Multi-stage build, .NET 8, порт 10000</td></tr>
+      <tr><td>Git-репозиторий</td><td>Опубликован</td><td><code>github.com/odarya06/wt-lab4-4mvc-ostashevskaya</code></td></tr>
+      <tr><td>Dockerfile</td><td>Собран на Render</td><td>Multi-stage build, .NET 8, порт 10000</td></tr>
       <tr><td>render.yaml</td><td>Готов</td><td>Docker Web Service, branch main</td></tr>
-      <tr><td>Публикация на Render</td><td>Требует аккаунта</td><td>Нужен GitHub-репозиторий и вход в Render</td></tr>
-      <tr><td>Публичный URL</td><td>Ожидает деплоя</td><td>Указывается после успешного deployment</td></tr>
-      <tr><td>Скриншоты Render</td><td>Ожидают деплоя</td><td>Dashboard, Build Logs, Deploy Logs</td></tr>
+      <tr><td>Публикация на Render</td><td>Выполнена</td><td>Docker Web Service, Free, регион Oregon</td></tr>
+      <tr><td>Публичный URL</td><td>Live</td><td><code>https://wt-lab4-4mvc-ostashevskaya.onrender.com</code></td></tr>
+      <tr><td>Скриншоты Render</td><td>Добавлены</td><td>Dashboard, Build Logs, Deploy Logs, live app</td></tr>
     </tbody>
   </table>
 
-  <div class="warning">
-    <strong>Что осталось для полного закрытия блока 7:</strong> создать GitHub-репозиторий,
-    подключить его к Render, выполнить deploy и добавить в README/report реальные ссылки
-    и скриншоты Dashboard, Build Logs, Deploy Logs и опубликованного приложения.
-    Всё необходимое для этого уже находится в проекте.
+  <div class="success">
+    <strong>Блок 7 закрыт.</strong> Проект опубликован в GitHub и развёрнут на Render.
+    Деплой завершился успешно, приложение доступно по HTTPS-адресу
+    <code>https://wt-lab4-4mvc-ostashevskaya.onrender.com</code>. Проверены главная
+    страница, каталог, карточка товара, форма добавления, редактирование и ответ 404.
   </div>
+
+  <h3>Render Dashboard</h3>
+  <p>
+    Сервис создан как <strong>Web Service</strong> с runtime <strong>Docker</strong>
+    на тарифе <strong>Free</strong>. Render автоматически передаёт приложению
+    <code>PORT</code>, собирает образ из <code>Dockerfile</code> и завершает HTTPS
+    на своём reverse-proxy.
+  </p>
+  <figure>
+    <img src="screenshots/render-01-service.png" alt="Render Dashboard: сервис Live" />
+    <figcaption>Рис. 9. Render Dashboard: статус Live, ветка main, коммит и публичный URL.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="screenshots/render-02-build-logs.png" alt="Render Build Logs" />
+    <figcaption>Рис. 10. Build Logs: Docker собирает .NET 8-образ, restore и publish проходят успешно.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="screenshots/render-03-deploy-logs.png" alt="Render Deploy Logs" />
+    <figcaption>Рис. 11. Deploy Logs: контейнер запущен, приложение слушает 0.0.0.0:10000, сервис Live.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="screenshots/render-04-live-app.png" alt="Опубликованное приложение на Render" />
+    <figcaption>Рис. 12. Опубликованное приложение по адресу wt-lab4-4mvc-ostashevskaya.onrender.com.</figcaption>
+  </figure>
 
   <h3>Особенность бесплатного тарифа</h3>
   <p>
@@ -1177,23 +1206,23 @@ docker run --rm -p 10000:10000 -e PORT=10000 wt-lab4-4mvc-ostashevskaya</code></
     POST-запросов, поиск и фильтрация, а также оформление на Bootstrap 5.
   </p>
   <p>
-    Приложение проверено локально: главная страница, каталог, карточка позиции,
-    добавление, редактирование, удаление и обработка 404 работают корректно.
-    Подготовлены Dockerfile с multi-stage сборкой, конфигурация <code>render.yaml</code>
-    и README с инструкцией по публикации.
+    Приложение проверено локально и после публикации: главная страница, каталог,
+    карточка позиции, добавление, редактирование, удаление и обработка 404 работают
+    корректно. Dockerfile с multi-stage сборкой успешно собран Render, конфигурация
+    <code>render.yaml</code> и README с инструкцией по публикации добавлены в репозиторий.
   </p>
   <p>
     В результате освоены принципы MVC, работа с Razor, Tag Helpers, валидацией и
-    маршрутизацией, а также подход к упаковке ASP.NET Core-приложения в Docker и
-    публикации в виде Web Service. Ограничением текущей версии остаётся хранение
-    данных в памяти; перенос в PostgreSQL и завершение деплоя на Render являются
-    следующими шагами.
+    маршрутизацией, а также упаковка ASP.NET Core-приложения в Docker и публикация
+    в виде Web Service. Приложение доступно по HTTPS на Render; ограничением
+    текущей версии остаётся хранение данных в памяти, поэтому после перезапуска
+    контейнера каталог возвращается к исходным шести позициям.
   </p>
 
   <div class="success">
-    <strong>Итог:</strong> все семь блоков WT-4 реализованы на уровне «продвинутый»;
-    для полного закрытия блока публикации осталось подключить аккаунт Render и
-    добавить реальные ссылки и скриншоты deployment.
+    <strong>Итог:</strong> все семь блоков WT-4 реализованы на уровне «продвинутый».
+    Код опубликован в GitHub, Docker-образ собран на Render, приложение работает по
+    адресу <code>https://wt-lab4-4mvc-ostashevskaya.onrender.com</code>.
   </div>
 </section>
 
@@ -1202,8 +1231,8 @@ docker run --rm -p 10000:10000 -e PORT=10000 wt-lab4-4mvc-ostashevskaya</code></
   <table>
     <thead><tr><th>Материал</th><th>Ссылка / путь</th></tr></thead>
     <tbody>
-      <tr><td>Git-репозиторий</td><td><code>https://github.com/&lt;ваш-логин&gt;/wt-lab4-4mvc-ostashevskaya</code></td></tr>
-      <tr><td>Опубликованное приложение</td><td><code>https://&lt;имя-сервиса&gt;.onrender.com</code></td></tr>
+      <tr><td>Git-репозиторий</td><td><code>https://github.com/odarya06/wt-lab4-4mvc-ostashevskaya</code></td></tr>
+      <tr><td>Опубликованное приложение</td><td><code>https://wt-lab4-4mvc-ostashevskaya.onrender.com</code></td></tr>
       <tr><td>Исходный код</td><td><code>wt-lab4-4mvc-ostashevskaya/</code></td></tr>
       <tr><td>Dockerfile</td><td><code>Dockerfile</code></td></tr>
       <tr><td>Конфигурация Render</td><td><code>render.yaml</code></td></tr>
@@ -1212,10 +1241,9 @@ docker run --rm -p 10000:10000 -e PORT=10000 wt-lab4-4mvc-ostashevskaya</code></
     </tbody>
   </table>
 
-  <div class="note">
-    После выполнения деплоя замените две ссылки выше на реальные адреса, добавьте
-    скриншоты Render Dashboard, Build Logs, Deploy Logs и опубликованного приложения.
-    Эти материалы включаются в итоговый PDF-отчёт и README.md.
+  <div class="success">
+    Все ссылки актуальны на момент подготовки отчёта. Скриншоты Render Dashboard,
+    Build Logs, Deploy Logs и опубликованного приложения включены в раздел 11.
   </div>
 </section>
 
