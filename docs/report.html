@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<title>WT-4. ASP.NET Core MVC — Складской учёт</title>
+<style>
+  :root {
+    --navy: #0b1f36;
+    --navy-soft: #123b63;
+    --blue: #1d4ed8;
+    --amber: #f59e0b;
+    --ink: #1f2937;
+    --muted: #5b6675;
+    --line: #dbe3ee;
+    --surface: #f5f7fb;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    font-size: 10.5pt;
+    line-height: 1.52;
+    background: #fff;
+  }
+
+  @page {
+    size: A4;
+    margin: 16mm 15mm 17mm 15mm;
+  }
+
+  .cover {
+    height: 262mm;
+    margin: -6mm -4mm 0;
+    padding: 32mm 22mm 20mm;
+    color: #fff;
+    background:
+      radial-gradient(circle at 82% 12%, rgba(245, 158, 11, 0.28), transparent 34%),
+      radial-gradient(circle at 10% 88%, rgba(59, 130, 246, 0.3), transparent 38%),
+      linear-gradient(135deg, #08182b 0%, #0b1f36 48%, #123b63 100%);
+    border-radius: 4mm;
+    position: relative;
+    overflow: hidden;
+    break-after: page;
+  }
+
+  .cover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 13mm 13mm;
+    pointer-events: none;
+  }
+
+  .cover > * { position: relative; z-index: 1; }
+  .cover-kicker {
+    display: inline-block;
+    padding: 2.2mm 5mm;
+    border: 0.4mm solid rgba(245, 158, 11, 0.55);
+    border-radius: 999px;
+    color: #fcd34d;
+    background: rgba(245, 158, 11, 0.14);
+    font-size: 9.5pt;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .cover h1 {
+    margin: 14mm 0 6mm;
+    font-size: 31pt;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+
+  .cover-domain {
+    margin: 0 0 18mm;
+    font-size: 14pt;
+    color: #fcd34d;
+    font-weight: 600;
+  }
+
+  .cover-box {
+    background: rgba(255,255,255,0.08);
+    border: 0.3mm solid rgba(255,255,255,0.16);
+    border-radius: 4mm;
+    padding: 7mm 8mm;
+    max-width: 132mm;
+    backdrop-filter: blur(4px);
+  }
+
+  .cover-box p { margin: 2.2mm 0; color: rgba(255,255,255,0.86); }
+  .cover-box strong { color: #fff; }
+
+  .cover-footer {
+    position: absolute;
+    left: 22mm;
+    right: 22mm;
+    bottom: 16mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    color: rgba(255,255,255,0.58);
+    font-size: 9pt;
+  }
+
+  .cover-footer .big { color: #fff; font-size: 12pt; font-weight: 700; }
+
+  .toc { break-after: page; }
+  .toc h2 { border: 0; padding: 0; margin: 0 0 8mm; font-size: 22pt; }
+  .toc ol { margin: 0; padding-left: 7mm; }
+  .toc li { margin: 2.7mm 0; font-size: 11pt; }
+  .toc li span { color: var(--muted); }
+
+  section { break-before: page; }
+  section.first { break-before: auto; }
+
+  h2 {
+    margin: 0 0 5mm;
+    padding-bottom: 2.5mm;
+    border-bottom: 0.5mm solid var(--line);
+    font-size: 19pt;
+    line-height: 1.2;
+    color: var(--navy);
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    margin: 7mm 0 2.5mm;
+    font-size: 12.5pt;
+    color: var(--navy);
+    break-after: avoid;
+  }
+
+  p { margin: 0 0 3.4mm; }
+  ul, ol { margin: 0 0 3.8mm; padding-left: 6mm; }
+  li { margin: 1.2mm 0; }
+  strong { color: #0f2742; }
+  code {
+    font-family: "SF Mono", Consolas, "Courier New", monospace;
+    font-size: 0.9em;
+    background: #eef2f8;
+    border: 0.2mm solid #dde5f0;
+    border-radius: 1.2mm;
+    padding: 0.2mm 1.2mm;
+  }
+
+  pre {
+    margin: 3mm 0 5mm;
+    padding: 4mm 4.5mm;
+    background: #0f1d2e;
+    color: #e5edf7;
+    border-radius: 3mm;
+    overflow: visible;
+    break-inside: auto;
+    font-family: "SF Mono", Consolas, "Courier New", monospace;
+    font-size: 8.2pt;
+    line-height: 1.45;
+    white-space: pre-wrap;
+  }
+
+  pre code { background: none; border: 0; color: inherit; padding: 0; font-size: inherit; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 3mm 0 5mm;
+    font-size: 9.2pt;
+    break-inside: auto;
+  }
+
+  tr { break-inside: avoid; }
+
+  th, td {
+    border: 0.25mm solid var(--line);
+    padding: 2.2mm 2.6mm;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th { background: #eef3fa; color: var(--navy); font-weight: 700; }
+  tbody tr:nth-child(even) { background: #fafbfd; }
+
+  .note, .warning, .success {
+    border-radius: 3mm;
+    padding: 3.5mm 4.5mm;
+    margin: 4mm 0;
+    break-inside: avoid;
+    font-size: 9.6pt;
+  }
+
+  .note { background: #eef4ff; border-left: 1mm solid var(--blue); }
+  .warning { background: #fff7e8; border-left: 1mm solid var(--amber); }
+  .success { background: #ecfdf3; border-left: 1mm solid #16a34a; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; }
+
+  .mini-card {
+    background: var(--surface);
+    border: 0.25mm solid var(--line);
+    border-radius: 3mm;
+    padding: 3.5mm;
+  }
+
+  .mini-card .label { font-size: 8pt; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .mini-card .value { font-size: 14pt; font-weight: 700; color: var(--navy); margin-top: 1mm; }
+
+  figure {
+    margin: 4mm 0 7mm;
+    break-inside: avoid;
+    text-align: center;
+  }
+
+  figure img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 92mm;
+    margin: 0 auto;
+    border: 0.3mm solid var(--line);
+    border-radius: 2.5mm;
+    box-shadow: 0 2mm 5mm rgba(15, 39, 66, 0.10);
+  }
+
+  figure img.tall {
+    width: auto;
+    max-width: 100%;
+    max-height: 196mm;
+    margin: 0 auto;
+  }
+
+  figcaption {
+    margin-top: 2mm;
+    font-size: 8.6pt;
+    color: var(--muted);
+  }
+
+  .chain {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2mm;
+    margin: 3mm 0 5mm;
+  }
+
+  .chain span {
+    background: #eef4ff;
+    border: 0.25mm solid #cfe0ff;
+    color: #123b63;
+    border-radius: 999px;
+    padding: 1.4mm 3.2mm;
+    font-size: 9pt;
+    font-weight: 600;
+  }
+
+  .qa { margin: 0 0 3.2mm; }
+  .qa .q { font-weight: 700; color: var(--navy); }
+  .qa .a { color: #334155; }
+
+  .muted { color: var(--muted); }
+  .small { font-size: 9pt; }
+  .center { text-align: center; }
+  .keep { break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-kicker">Лабораторная работа WT-4</div>
+  <h1>Разработка веб-приложения<br />на ASP.NET Core MVC<br />и публикация на Render</h1>
+  <p class="cover-domain">Предметная область: «Складской учёт»</p>
+
+  <div class="cover-box">
+    <p><strong>Проект:</strong> wt-lab4-4mvc-ostashevskaya</p>
+    <p><strong>Выполнила:</strong> Осташевская Дарья</p>
+    <p><strong>Стек:</strong> ASP.NET Core 8 MVC, Razor, Bootstrap 5, Docker, Render</p>
+    <p><strong>Год:</strong> 2026</p>
+  </div>
+
+  <div class="cover-footer">
+    <div>
+      <div class="big">Складской учёт</div>
+      <div>Каталог, остатки и стоимость запасов</div>
+    </div>
+    <div>Отчёт по лабораторной работе</div>
+  </div>
+</div>
+
+<div class="toc">
+  <h2>Содержание</h2>
+  <ol>
+    <li>Цель работы</li>
+    <li>Предметная область и исходные данные</li>
+    <li>Структура проекта</li>
+    <li>Модель данных</li>
+    <li>Контроллер и маршрутизация</li>
+    <li>Razor Views</li>
+    <li>Обработка GET- и POST-запросов</li>
+    <li>Дополнительная функциональность</li>
+    <li>Визуальное оформление на Bootstrap</li>
+    <li>Docker и подготовка к публикации</li>
+    <li>Публикация на Render</li>
+    <li>Скриншоты работающего приложения</li>
+    <li>Ответы на контрольные вопросы</li>
+    <li>Вывод</li>
+    <li>Ссылки и материалы</li>
+  </ol>
+  <div class="note" style="margin-top: 14mm">
+    <strong>Статус работы.</strong> Приложение полностью реализовано и проверено локально:
+    все страницы, GET/POST-операции, валидация, редактирование, удаление и обработка 404.
+    Dockerfile и конфигурация Render подготовлены. Для завершения публикации требуется
+    подключить личный аккаунт GitHub и Render — в разделе 11 приведены точные шаги.
+  </div>
+</div>
+
+<section class="first">
+  <h2>1. Цель работы</h2>
+  <p>
+    Освоить разработку веб-приложений с использованием архитектурного подхода
+    <strong>ASP.NET Core MVC</strong> и подготовить приложение к публикации на платформе
+    <strong>Render</strong>.
+  </p>
+  <p>В ходе работы необходимо было:</p>
+  <ul>
+    <li>создать ASP.NET Core MVC-приложение;</li>
+    <li>перенести модель предметной области из WT-3;</li>
+    <li>изучить структуру MVC-проекта: <code>Controllers</code>, <code>Models</code>, <code>Views</code>, <code>wwwroot</code>, <code>Program.cs</code>;</li>
+    <li>создать модель, контроллер и Razor Views;</li>
+    <li>настроить маршрутизацию и реализовать GET- и POST-запросы;</li>
+    <li>оформить интерфейс с использованием Bootstrap;</li>
+    <li>подготовить Dockerfile и опубликовать приложение как Web Service на Render.</li>
+  </ul>
+  <p>
+    В соответствии с условием лабораторной работы база данных не используется:
+    все данные хранятся в памяти приложения и сбрасываются при перезапуске процесса.
+  </p>
+
+  <h3>Результат работы</h3>
+  <div class="grid-3">
+    <div class="mini-card">
+      <div class="label">Реализовано</div>
+      <div class="value">7 блоков</div>
+      <div class="small muted">от MVC-проекта до Dockerfile</div>
+    </div>
+    <div class="mini-card">
+      <div class="label">Страницы</div>
+      <div class="value">8</div>
+      <div class="small muted">главная, каталог, детали, формы, 404</div>
+    </div>
+    <div class="mini-card">
+      <div class="label">Маршруты</div>
+      <div class="value">7</div>
+      <div class="small muted">GET и POST для CRUD-операций</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>2. Предметная область и исходные данные</h2>
+  <p>
+    Предметная область — <strong>складской учёт</strong>. Приложение предназначено для ведения
+    каталога складских позиций: товаров, комплектующих, мебели и расходных материалов.
+    Для каждой позиции хранятся наименование, артикул, категория, поставщик, количество,
+    цена, описание, дата поступления и признак доступности к отгрузке.
+  </p>
+
+  <h3>Основные сущности</h3>
+  <table>
+    <thead>
+      <tr><th>Сущность</th><th>Назначение</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>Product</code></td><td>Складская позиция — центральная модель предметной области.</td></tr>
+      <tr><td><code>HomeViewModel</code></td><td>Сводные показатели для главной страницы: количество позиций, единиц, категорий и стоимость запасов.</td></tr>
+      <tr><td><code>ProductRepository</code></td><td>Хранилище в памяти: начальные данные и операции чтения/добавления/изменения/удаления.</td></tr>
+      <tr><td><code>DisplayHelper</code></td><td>Вспомогательные методы оформления: иконка категории и CSS-класс статуса.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Начальные данные</h3>
+  <p>
+    В <code>ProductRepository</code> подготовлено шесть объектов различных категорий.
+    Этого достаточно для выполнения требования «не менее пяти объектов» и демонстрации
+    разных состояний остатка.
+  </p>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Наименование</th><th>Категория</th><th>Цена, ₽</th><th>Остаток</th><th>Статус</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>Ноутбук Lenovo ThinkPad E14</td><td>Компьютеры</td><td>89 990</td><td>12</td><td>В наличии</td></tr>
+      <tr><td>2</td><td>Беспроводная мышь Logitech M185</td><td>Аксессуары</td><td>2 490</td><td>48</td><td>В наличии</td></tr>
+      <tr><td>3</td><td>Офисное кресло ErgoLine Comfort</td><td>Мебель</td><td>15 900</td><td>7</td><td>Низкий остаток</td></tr>
+      <tr><td>4</td><td>Монитор Dell UltraSharp 27″</td><td>Компьютеры</td><td>32 990</td><td>0</td><td>Нет в наличии</td></tr>
+      <tr><td>5</td><td>Бумага офисная А4, 500 листов</td><td>Расходники</td><td>390</td><td>120</td><td>В наличии</td></tr>
+      <tr><td>6</td><td>Стеллаж металлический 4 полки</td><td>Мебель</td><td>7 490</td><td>15</td><td>В наличии</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>Ограничение.</strong> Данные находятся в статическом списке внутри процесса.
+    После перезапуска приложения изменения, внесённые пользователем, исчезают. Это
+    соответствует условию WT-4; перенос хранения в PostgreSQL запланирован в следующих работах.
+  </div>
+</section>
+
+<section>
+  <h2>3. Структура проекта</h2>
+  <p>
+    Проект создан командой <code>dotnet new mvc -n wt-lab4-4mvc-ostashevskaya</code>
+    и доработан под предметную область. Структура каталогов:
+  </p>
+  <pre><code>wt-lab4-4mvc-ostashevskaya/
+├── Controllers/
+│   ├── HomeController.cs
+│   └── ProductController.cs
+├── Data/
+│   └── ProductRepository.cs
+├── Helpers/
+│   └── DisplayHelper.cs
+├── Infrastructure/
+│   └── InvariantDecimalModelBinder.cs
+├── Models/
+│   ├── HomeViewModel.cs
+│   ├── Product.cs
+│   └── ErrorViewModel.cs
+├── Views/
+│   ├── Home/
+│   │   ├── Index.cshtml
+│   │   ├── Privacy.cshtml
+│   │   └── Status.cshtml
+│   ├── Product/
+│   │   ├── Index.cshtml
+│   │   ├── Details.cshtml
+│   │   ├── Create.cshtml
+│   │   ├── Edit.cshtml
+│   │   └── _ProductForm.cshtml
+│   └── Shared/
+│       ├── _Layout.cshtml
+│       ├── _ValidationScriptsPartial.cshtml
+│       └── Error.cshtml
+├── wwwroot/
+│   ├── css/site.css
+│   ├── images/warehouse.svg
+│   └── lib/ (Bootstrap, jQuery, валидация)
+├── Dockerfile
+├── render.yaml
+├── Program.cs
+├── README.md
+└── wt-lab4-4mvc-ostashevskaya.csproj</code></pre>
+
+  <h3>Назначение ключевых каталогов</h3>
+  <table>
+    <thead>
+      <tr><th>Каталог / файл</th><th>Роль в MVC</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>Controllers/</code></td><td>Обрабатывает HTTP-запросы, вызывает модель и выбирает представление.</td></tr>
+      <tr><td><code>Models/</code></td><td>Описывает предметную область и правила валидации.</td></tr>
+      <tr><td><code>Views/</code></td><td>Razor-шаблоны, формирующие HTML на основе модели.</td></tr>
+      <tr><td><code>wwwroot/</code></td><td>Статические файлы: CSS, JavaScript, изображения, библиотеки Bootstrap и jQuery.</td></tr>
+      <tr><td><code>Program.cs</code></td><td>Настройка сервисов, конвейера middleware, маршрутизации и порта приложения.</td></tr>
+      <tr><td><code>_Layout.cshtml</code></td><td>Общий каркас страниц: навигация, подключение CSS/JS, подвал, <code>@RenderBody()</code>.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>4. Модель данных</h2>
+  <p>
+    Модель <code>Product</code> содержит десять свойств и правила валидации через
+    <strong>Data Annotations</strong>. Дополнительно вычисляются стоимость остатка и
+    текстовый статус позиции.
+  </p>
+  <pre><code>using System.ComponentModel.DataAnnotations;
+
+namespace wt_lab4_4mvc_ostashevskaya.Models;
+
+public class Product
+{
+    public int Id { get; set; }
+
+    [Required(ErrorMessage = "Укажите наименование товара")]
+    [StringLength(100, MinimumLength = 2)]
+    [Display(Name = "Наименование")]
+    public string Name { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Укажите артикул")]
+    [StringLength(20, MinimumLength = 2)]
+    [Display(Name = "Артикул")]
+    public string Sku { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Выберите категорию")]
+    [Display(Name = "Категория")]
+    public string Category { get; set; } = string.Empty;
+
+    [StringLength(100)]
+    [Display(Name = "Поставщик")]
+    public string Supplier { get; set; } = string.Empty;
+
+    [Range(0, 1_000_000)]
+    [Display(Name = "Количество на складе")]
+    public int Quantity { get; set; }
+
+    [Range(0.01, 10_000_000)]
+    [Display(Name = "Цена, ₽")]
+    public decimal Price { get; set; }
+
+    [StringLength(500)]
+    [Display(Name = "Описание")]
+    public string Description { get; set; } = string.Empty;
+
+    [Display(Name = "Доступен к отгрузке")]
+    public bool IsAvailable { get; set; } = true;
+
+    [DataType(DataType.Date)]
+    [Display(Name = "Дата поступления")]
+    public DateTime ReceivedAt { get; set; } = DateTime.Today;
+
+    public decimal TotalValue =&gt; Price * Quantity;
+
+    public string StockStatus =&gt; Quantity == 0
+        ? "Нет в наличии"
+        : IsAvailable ? "В наличии" : "Недоступен";
+}</code></pre>
+
+  <h3>Свойства модели</h3>
+  <table>
+    <thead>
+      <tr><th>Свойство</th><th>Тип</th><th>Назначение</th><th>Ограничение</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>Id</code></td><td>int</td><td>Уникальный идентификатор</td><td>Назначается хранилищем</td></tr>
+      <tr><td><code>Name</code></td><td>string</td><td>Наименование позиции</td><td>2–100 символов, обязательно</td></tr>
+      <tr><td><code>Sku</code></td><td>string</td><td>Артикул</td><td>2–20 символов, обязательно</td></tr>
+      <tr><td><code>Category</code></td><td>string</td><td>Категория</td><td>Обязательно</td></tr>
+      <tr><td><code>Supplier</code></td><td>string</td><td>Поставщик</td><td>До 100 символов</td></tr>
+      <tr><td><code>Quantity</code></td><td>int</td><td>Количество на складе</td><td>0–1 000 000</td></tr>
+      <tr><td><code>Price</code></td><td>decimal</td><td>Цена за единицу</td><td>Больше 0</td></tr>
+      <tr><td><code>Description</code></td><td>string</td><td>Описание</td><td>До 500 символов</td></tr>
+      <tr><td><code>IsAvailable</code></td><td>bool</td><td>Доступность к отгрузке</td><td>—</td></tr>
+      <tr><td><code>ReceivedAt</code></td><td>DateTime</td><td>Дата поступления</td><td>—</td></tr>
+      <tr><td><code>TotalValue</code></td><td>decimal</td><td>Цена × количество</td><td>Вычисляемое</td></tr>
+      <tr><td><code>StockStatus</code></td><td>string</td><td>Текстовый статус</td><td>Вычисляемое</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>5. Контроллер и маршрутизация</h2>
+  <p>
+    Контроллер <code>ProductController</code> наследуется от <code>Controller</code> и
+    содержит действия для каталога и CRUD-операций. Каждое действие возвращает
+    <code>IActionResult</code>.
+  </p>
+
+  <h3>Действия контроллера</h3>
+  <table>
+    <thead>
+      <tr><th>HTTP</th><th>URL</th><th>Действие</th><th>Результат</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/Product/Index</code></td><td><code>Index(search, category, status)</code></td><td>Каталог с фильтрами</td></tr>
+      <tr><td>GET</td><td><code>/Product/Details/1</code></td><td><code>Details(id)</code></td><td>Карточка или 404</td></tr>
+      <tr><td>GET</td><td><code>/Product/Create</code></td><td><code>Create()</code></td><td>Форма создания</td></tr>
+      <tr><td>POST</td><td><code>/Product/Create</code></td><td><code>Create(Product)</code></td><td>Редирект на Index</td></tr>
+      <tr><td>GET</td><td><code>/Product/Edit/1</code></td><td><code>Edit(id)</code></td><td>Форма редактирования</td></tr>
+      <tr><td>POST</td><td><code>/Product/Edit/1</code></td><td><code>Edit(id, Product)</code></td><td>Редирект на Index</td></tr>
+      <tr><td>POST</td><td><code>/Product/Delete/1</code></td><td><code>Delete(id)</code></td><td>Редирект на Index</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Index: передача коллекции в представление</h3>
+  <pre><code>public IActionResult Index(string? search, string? category, string? status)
+{
+    var products = ProductRepository.GetAll().AsEnumerable();
+
+    if (!string.IsNullOrWhiteSpace(search))
+    {
+        var query = search.Trim();
+        products = products.Where(product =&gt;
+            product.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+            product.Sku.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+            product.Supplier.Contains(query, StringComparison.OrdinalIgnoreCase));
+    }
+
+    if (!string.IsNullOrWhiteSpace(category))
+        products = products.Where(product =&gt; product.Category == category);
+
+    products = status switch
+    {
+        "in-stock" =&gt; products.Where(p =&gt; p.Quantity &gt; 0 &amp;&amp; p.IsAvailable),
+        "low-stock" =&gt; products.Where(p =&gt; p.Quantity is &gt; 0 and &lt;= 10),
+        "out-of-stock" =&gt; products.Where(p =&gt; p.Quantity == 0),
+        _ =&gt; products
+    };
+
+    ViewBag.Categories = ProductRepository.GetCategories();
+    return View(products.ToList());
+}</code></pre>
+
+  <h3>Details: обработка отсутствующего объекта</h3>
+  <pre><code>public IActionResult Details(int id)
+{
+    var product = ProductRepository.GetById(id);
+    if (product is null)
+    {
+        return NotFound();   // HTTP 404
+    }
+
+    return View(product);
+}</code></pre>
+
+  <h3>Маршрутизация</h3>
+  <p>
+    Используется маршрут по умолчанию:
+  </p>
+  <pre><code>app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");</code></pre>
+  <p>Цепочка обработки запроса:</p>
+  <div class="chain">
+    <span>URL</span><span>Routing</span><span>Controller</span><span>Action</span>
+    <span>Model</span><span>View</span><span>HTML</span>
+  </div>
+  <p>
+    Например, запрос <code>/Product/Details/1</code> разбирается как
+    <code>controller = Product</code>, <code>action = Details</code>, <code>id = 1</code>.
+    ASP.NET Core находит <code>ProductController</code>, вызывает метод
+    <code>Details(1)</code>, получает объект из хранилища и передаёт его в
+    <code>Views/Product/Details.cshtml</code>. Вариант
+    <code>/Product/Details?id=1</code> работает за счёт связывания параметра из query string.
+  </p>
+</section>
+
+<section>
+  <h2>6. Razor Views</h2>
+  <p>
+    Представления используют синтаксис Razor: директиву <code>@model</code>,
+    циклы <code>@foreach</code>, условные конструкции и Tag Helpers.
+  </p>
+
+  <h3>Представления проекта</h3>
+  <table>
+    <thead>
+      <tr><th>Файл</th><th>Назначение</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>Views/Home/Index.cshtml</code></td><td>Главная страница: hero-блок, статистика, последние поступления, преимущества.</td></tr>
+      <tr><td><code>Views/Product/Index.cshtml</code></td><td>Каталог: карточки, поиск, фильтры, раскрывающаяся таблица.</td></tr>
+      <tr><td><code>Views/Product/Details.cshtml</code></td><td>Подробная карточка позиции и блок действий.</td></tr>
+      <tr><td><code>Views/Product/Create.cshtml</code></td><td>Форма добавления.</td></tr>
+      <tr><td><code>Views/Product/Edit.cshtml</code></td><td>Форма редактирования.</td></tr>
+      <tr><td><code>Views/Product/_ProductForm.cshtml</code></td><td>Общие поля формы для Create и Edit.</td></tr>
+      <tr><td><code>Views/Shared/_Layout.cshtml</code></td><td>Общий каркас: navbar, footer, подключение ресурсов.</td></tr>
+      <tr><td><code>Views/Home/Status.cshtml</code></td><td>Страница ошибки, в том числе 404.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Сильно типизированное представление и цикл</h3>
+  <pre><code>@model List&lt;Product&gt;
+
+&lt;h1&gt;Каталог товаров&lt;/h1&gt;
+&lt;p&gt;Найдено: @Model.Count&lt;/p&gt;
+
+&lt;div class="row g-4"&gt;
+    @foreach (var product in Model)
+    {
+        &lt;div class="col-12 col-md-6 col-lg-4"&gt;
+            &lt;div class="card h-100 shadow-sm rounded-4"&gt;
+                &lt;div class="card-body"&gt;
+                    &lt;h2 class="h5"&gt;@product.Name&lt;/h2&gt;
+                    &lt;p&gt;@product.Price.ToString("N0") ₽&lt;/p&gt;
+                    &lt;a asp-action="Details"
+                       asp-route-id="@product.Id"
+                       class="btn btn-outline-primary"&gt;
+                        Подробнее
+                    &lt;/a&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    }
+&lt;/div&gt;</code></pre>
+
+  <h3>Tag Helpers</h3>
+  <p>
+    В представлениях используются <code>asp-action</code>, <code>asp-controller</code>,
+    <code>asp-route-id</code>, <code>asp-for</code>, <code>asp-validation-for</code> и
+    <code>asp-validation-summary</code>. Они позволяют не писать URL вручную: адреса
+    генерируются на основе маршрутизации, а поля формы связываются со свойствами модели.
+  </p>
+  <pre><code>&lt;a asp-controller="Product" asp-action="Details"
+   asp-route-id="@product.Id"&gt;Подробнее&lt;/a&gt;
+
+&lt;input asp-for="Price" class="form-control" type="number" step="0.01" /&gt;
+&lt;span asp-validation-for="Price" class="text-danger small"&gt;&lt;/span&gt;</code></pre>
+</section>
+
+<section>
+  <h2>7. Обработка GET- и POST-запросов</h2>
+  <p>
+    Добавление товара реализовано по схеме <strong>Post/Redirect/Get</strong>:
+    GET показывает форму, POST сохраняет объект и перенаправляет пользователя на каталог.
+    Это защищает от повторной отправки формы при обновлении страницы.
+  </p>
+
+  <h3>GET /Product/Create</h3>
+  <pre><code>public IActionResult Create()
+{
+    FillCategories();
+    return View(new Product());
+}</code></pre>
+
+  <h3>POST /Product/Create</h3>
+  <pre><code>[HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult Create(Product product)
+{
+    if (!ModelState.IsValid)
+    {
+        FillCategories();
+        return View(product);
+    }
+
+    ProductRepository.Add(product);
+    TempData["Success"] = $"Позиция «{product.Name}» добавлена на склад.";
+    return RedirectToAction(nameof(Index));
+}</code></pre>
+
+  <p>Ключевые элементы:</p>
+  <ul>
+    <li><code>[HttpPost]</code> ограничивает действие только POST-запросами;</li>
+    <li><code>[ValidateAntiForgeryToken]</code> защищает от CSRF, форма содержит антифорджери-токен;</li>
+    <li><code>ModelState.IsValid</code> проверяет Data Annotations;</li>
+    <li>при ошибках возвращается та же форма с введёнными значениями и сообщениями;</li>
+    <li><code>TempData["Success"]</code> показывает уведомление после редиректа;</li>
+    <li><code>RedirectToAction(nameof(Index))</code> реализует PRG-паттерн.</li>
+  </ul>
+
+  <h3>Валидация и десятичные числа</h3>
+  <p>
+    Поля формы помечены атрибутами <code>[Required]</code>, <code>[StringLength]</code>,
+    <code>[Range]</code>. На клиенте работает jQuery Validation, на сервере — повторная
+    проверка модели. Дополнительно реализован <code>InvariantDecimalModelBinder</code>:
+    HTML-поле <code>type="number"</code> отправляет точку, а пользователь может ввести
+    запятую, поэтому цена принимается в обоих форматах.
+  </p>
+
+  <h3>Редактирование и удаление</h3>
+  <pre><code>[HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult Edit(int id, Product product)
+{
+    if (id != product.Id) return BadRequest();
+
+    if (!ModelState.IsValid)
+    {
+        FillCategories();
+        return View(product);
+    }
+
+    if (!ProductRepository.Update(product)) return NotFound();
+
+    TempData["Success"] = $"Изменения по позиции «{product.Name}» сохранены.";
+    return RedirectToAction(nameof(Index));
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult Delete(int id)
+{
+    var product = ProductRepository.GetById(id);
+    if (product is null) return NotFound();
+
+    ProductRepository.Delete(id);
+    TempData["Success"] = $"Позиция «{product.Name}» удалена со склада.";
+    return RedirectToAction(nameof(Index));
+}</code></pre>
+</section>
+
+<section>
+  <h2>8. Дополнительная функциональность</h2>
+  <p>
+    Помимо обязательного минимума реализованы поиск, фильтрация, подробная карточка,
+    редактирование, удаление и корректная обработка отсутствующих объектов.
+  </p>
+
+  <h3>Поиск и фильтры</h3>
+  <ul>
+    <li>поиск по наименованию, артикулу и поставщику без учёта регистра;</li>
+    <li>фильтр по категории;</li>
+    <li>фильтр по остатку: «В наличии», «Низкий остаток (≤ 10)», «Нет в наличии»;</li>
+    <li>счётчик найденных позиций и пустое состояние с кнопкой сброса.</li>
+  </ul>
+  <p>
+    Параметры передаются GET-запросом, поэтому результат фильтрации можно сохранить
+    в закладках или отправить ссылкой.
+  </p>
+
+  <h3>Статусы и вычисления</h3>
+  <p>
+    Статус вычисляется по количеству и признаку доступности. Для оформления используется
+    <code>DisplayHelper.StatusBadgeClass</code>:
+  </p>
+  <table>
+    <thead><tr><th>Условие</th><th>Статус</th><th>Bootstrap-класс</th></tr></thead>
+    <tbody>
+      <tr><td><code>Quantity == 0</code></td><td>Нет в наличии</td><td><code>bg-danger</code></td></tr>
+      <tr><td><code>IsAvailable == false</code></td><td>Недоступен</td><td><code>bg-secondary</code></td></tr>
+      <tr><td><code>Quantity &lt;= 10</code></td><td>В наличии</td><td><code>bg-warning text-dark</code></td></tr>
+      <tr><td>Иначе</td><td>В наличии</td><td><code>bg-success</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>404 Not Found</h3>
+  <p>
+    Если позиция не найдена, действие возвращает <code>NotFound()</code> — HTTP-статус 404.
+    В <code>Program.cs</code> подключена страница статуса:
+  </p>
+  <pre><code>app.UseStatusCodePagesWithReExecute("/Home/Status", "?code={0}");</code></pre>
+  <p>
+    Пользователь видит оформленную страницу с кодом ошибки и кнопками возврата,
+    при этом HTTP-статус ответа остаётся 404.
+  </p>
+
+  <h3>Удаление с подтверждением</h3>
+  <p>
+    На странице Details кнопка удаления отправляет POST-форму и запрашивает подтверждение
+    через <code>confirm()</code>. После удаления выполняется редирект в каталог с сообщением
+    об успехе.
+  </p>
+</section>
+
+<section>
+  <h2>9. Визуальное оформление на Bootstrap</h2>
+  <p>
+    Интерфейс построен на Bootstrap 5.1 и дополнен собственными стилями в
+    <code>wwwroot/css/site.css</code>. Используются адаптивная сетка, карточки,
+    бейджи, кнопки, формы, навигация и hover-эффекты.
+  </p>
+
+  <h3>Использованные классы Bootstrap</h3>
+  <div class="grid-2">
+    <div class="mini-card">
+      <strong>Сетка и контейнеры</strong>
+      <p class="small muted"><code>container</code>, <code>row</code>, <code>col-12</code>, <code>col-md-6</code>, <code>col-lg-4</code>, <code>g-4</code>, <code>d-flex</code>, <code>justify-content-between</code>, <code>align-items-center</code>.</p>
+    </div>
+    <div class="mini-card">
+      <strong>Карточки и акценты</strong>
+      <p class="small muted"><code>card</code>, <code>card-body</code>, <code>shadow-sm</code>, <code>rounded-4</code>, <code>badge</code>, <code>bg-success</code>, <code>bg-danger</code>, <code>bg-warning</code>.</p>
+    </div>
+    <div class="mini-card">
+      <strong>Навигация и кнопки</strong>
+      <p class="small muted"><code>navbar</code>, <code>navbar-expand-lg</code>, <code>navbar-dark</code>, <code>nav-link</code>, <code>btn</code>, <code>btn-primary</code>, <code>btn-outline-primary</code>, <code>rounded-pill</code>.</p>
+    </div>
+    <div class="mini-card">
+      <strong>Формы и таблицы</strong>
+      <p class="small muted"><code>form-label</code>, <code>form-control</code>, <code>form-select</code>, <code>form-check</code>, <code>input-group</code>, <code>table</code>, <code>table-hover</code>, <code>table-responsive</code>.</p>
+    </div>
+  </div>
+
+  <h3>Единый стиль</h3>
+  <ul>
+    <li>тёмно-синий navbar и подвал с янтарным акцентом;</li>
+    <li>hero-блок с градиентом, сеткой и SVG-иллюстрацией склада;</li>
+    <li>карточки товаров с тенью, скруглением и подъёмом при наведении;</li>
+    <li>иконки категорий и цветовые статусы;</li>
+    <li>адаптивная сетка: 1 колонка на телефоне, 2 на планшете, 3 на десктопе;</li>
+    <li>раскрывающаяся таблица для компактного просмотра всех позиций;</li>
+    <li>сообщения об успешных операциях и страница 404 в общем стиле.</li>
+  </ul>
+
+  <div class="note">
+    <strong>Доступность.</strong> Для иллюстрации заданы <code>alt</code> и <code>aria-hidden</code>,
+    у навигации есть <code>aria-label</code>, у кнопок — текстовые подписи или <code>title</code>,
+    цвета статусов дополнены текстом, а анимация отключается при
+    <code>prefers-reduced-motion</code>.
+  </div>
+</section>
+
+<section>
+  <h2>10. Docker и подготовка к публикации</h2>
+  <p>
+    Для Render используется <strong>Web Service</strong> с runtime <strong>Docker</strong>:
+    Render собирает образ по Dockerfile и запускает контейнер. Dockerfile состоит из двух
+    стадий: сборка на образе SDK и запуск на компактном runtime-образе.
+  </p>
+
+  <pre><code># Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+COPY ["wt-lab4-4mvc-ostashevskaya.csproj", "./"]
+RUN dotnet restore "wt-lab4-4mvc-ostashevskaya.csproj"
+
+COPY . .
+RUN dotnet publish "wt-lab4-4mvc-ostashevskaya.csproj" \
+    -c Release \
+    -o /app/publish \
+    /p:UseAppHost=false
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+WORKDIR /app
+
+COPY --from=build /app/publish .
+
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_URLS=http://0.0.0.0:10000
+
+EXPOSE 10000
+
+ENTRYPOINT ["dotnet", "wt-lab4-4mvc-ostashevskaya.dll"]</code></pre>
+
+  <h3>Порт и сетевой интерфейс</h3>
+  <p>
+    Render передаёт порт через переменную окружения <code>PORT</code>. В
+    <code>Program.cs</code> приложение явно слушает все интерфейсы:
+  </p>
+  <pre><code>var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");</code></pre>
+  <p>
+    Привязка к <code>0.0.0.0</code> обязательна: контейнер должен принимать соединения
+    не только с <code>localhost</code>, а с интерфейса, доступного reverse-proxy Render.
+    HTTPS завершается на стороне Render; приложение внутри контейнера работает по HTTP.
+  </p>
+
+  <h3>Локальная проверка</h3>
+  <pre><code>dotnet restore
+dotnet run
+
+# либо с явным портом
+PORT=10000 dotnet run
+
+# сборка Docker-образа
+docker build -t wt-lab4-4mvc-ostashevskaya .
+docker run --rm -p 10000:10000 -e PORT=10000 wt-lab4-4mvc-ostashevskaya</code></pre>
+
+  <div class="warning">
+    <strong>Примечание о среде выполнения.</strong> В среде, где готовился отчёт, не установлен
+    Docker/Colima, поэтому локальная сборка контейнера не выполнялась. Dockerfile проверен
+    структурно, а Release-сборка проекта успешно выполнена командой
+    <code>dotnet publish -c Release</code>. На Render этот же Dockerfile используется
+    для сборки образа; скриншоты Build Logs и Deploy Logs добавляются после подключения аккаунта.
+  </div>
+</section>
+
+<section>
+  <h2>11. Публикация на Render</h2>
+  <p>
+    Публикация выполняется через Git-репозиторий и Render Web Service. Порядок действий:
+  </p>
+  <ol>
+    <li>Создать публичный репозиторий GitHub и отправить проект в ветку <code>main</code>.</li>
+    <li>В Render выбрать <strong>New → Web Service</strong> и подключить репозиторий.</li>
+    <li>Указать <strong>Runtime: Docker</strong>, <strong>Branch: main</strong>,
+        <strong>Dockerfile Path: ./Dockerfile</strong>.</li>
+    <li>Оставить переменную <code>PORT</code> управляемой Render (по умолчанию 10000).</li>
+    <li>Нажать <strong>Deploy</strong> и дождаться успешной сборки и запуска.</li>
+    <li>Открыть публичный адрес <code>https://&lt;имя-сервиса&gt;.onrender.com</code>
+        и проверить страницы <code>/</code>, <code>/Product/Index</code>,
+        <code>/Product/Details/1</code>, <code>/Product/Create</code>,
+        <code>/Product/Edit/1</code>.</li>
+  </ol>
+
+  <h3>render.yaml</h3>
+  <p>Для воспроизводимого создания сервиса добавлен Blueprint:</p>
+  <pre><code>services:
+  - type: web
+    name: wt-lab4-4mvc-ostashevskaya
+    runtime: docker
+    plan: free
+    branch: main
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production</code></pre>
+
+  <h3>Автоматический deployment</h3>
+  <p>
+    При подключённом GitHub-репозитории Render запускает новый deployment после каждого
+    push в выбранную ветку. Достаточно изменить приложение, выполнить
+    <code>git add .</code>, <code>git commit</code> и <code>git push</code> — Render
+    пересоберёт образ и обновит работающий сервис.
+  </p>
+
+  <h3>Статус публикации</h3>
+  <table>
+    <thead><tr><th>Этап</th><th>Статус</th><th>Комментарий</th></tr></thead>
+    <tbody>
+      <tr><td>Git-репозиторий</td><td>Подготовлен локально</td><td>История из осмысленных коммитов</td></tr>
+      <tr><td>Dockerfile</td><td>Готов</td><td>Multi-stage build, .NET 8, порт 10000</td></tr>
+      <tr><td>render.yaml</td><td>Готов</td><td>Docker Web Service, branch main</td></tr>
+      <tr><td>Публикация на Render</td><td>Требует аккаунта</td><td>Нужен GitHub-репозиторий и вход в Render</td></tr>
+      <tr><td>Публичный URL</td><td>Ожидает деплоя</td><td>Указывается после успешного deployment</td></tr>
+      <tr><td>Скриншоты Render</td><td>Ожидают деплоя</td><td>Dashboard, Build Logs, Deploy Logs</td></tr>
+    </tbody>
+  </table>
+
+  <div class="warning">
+    <strong>Что осталось для полного закрытия блока 7:</strong> создать GitHub-репозиторий,
+    подключить его к Render, выполнить deploy и добавить в README/report реальные ссылки
+    и скриншоты Dashboard, Build Logs, Deploy Logs и опубликованного приложения.
+    Всё необходимое для этого уже находится в проекте.
+  </div>
+
+  <h3>Особенность бесплатного тарифа</h3>
+  <p>
+    Бесплатный Web Service на Render переходит в режим ожидания после периода неактивности.
+    Первый запрос после паузы может выполняться дольше обычного — это нормальное поведение
+    платформы, а не ошибка приложения.
+  </p>
+</section>
+
+<section>
+  <h2>12. Скриншоты работающего приложения</h2>
+  <p class="muted">
+    Скриншоты сделаны при локальном запуске приложения на
+    <code>http://127.0.0.1:5080</code>. Данные на скриншотах соответствуют
+    in-memory хранилищу; после добавления седьмой позиции каталог содержит 7 товаров.
+  </p>
+
+  <figure>
+    <img src="screenshots/desktop-01-home.png" alt="Главная страница приложения" />
+    <figcaption>Рис. 1. Главная страница: hero-блок, статистика склада и последние поступления.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="screenshots/desktop-02-catalog.png" alt="Каталог товаров" />
+    <figcaption>Рис. 2. Каталог товаров: поиск, фильтры, карточки и статусы остатков.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <figure>
+    <img src="screenshots/desktop-03-create.png" alt="Форма добавления товара" />
+    <figcaption>Рис. 3. Форма добавления товара с Bootstrap-оформлением и валидацией.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="screenshots/desktop-06-create-result.png" alt="Результат добавления товара" />
+    <figcaption>Рис. 4. Результат POST: сообщение об успехе и новая позиция в каталоге.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <figure>
+    <img src="screenshots/desktop-04-details.png" alt="Страница подробной информации" />
+    <figcaption>Рис. 5. Карточка позиции: характеристики, стоимость остатка и действия.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="screenshots/desktop-08-edit-new.png" alt="Форма редактирования" />
+    <figcaption>Рис. 6. Дополнительная операция Edit: форма редактирования позиции.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <figure>
+    <img src="screenshots/desktop-09-table.png" class="tall" alt="Табличное представление каталога" />
+    <figcaption>Рис. 7. Альтернативное табличное представление каталога.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="screenshots/desktop-10-not-found.png" alt="Страница 404" />
+    <figcaption>Рис. 8. Обработка отсутствующей позиции: HTTP 404 и оформленная страница ошибки.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>13. Ответы на контрольные вопросы</h2>
+
+  <div class="qa"><span class="q">1. Что такое ASP.NET Core MVC?</span><br />
+    <span class="a">Кроссплатформенный фреймворк для создания веб-приложений по архитектурному шаблону Model–View–Controller: модель хранит данные и логику, представление формирует HTML, контроллер обрабатывает запросы.</span></div>
+
+  <div class="qa"><span class="q">2. Что такое Model?</span><br />
+    <span class="a">Слой предметной области: классы данных, правила валидации и бизнес-логика. В работе это <code>Product</code> и <code>HomeViewModel</code>.</span></div>
+
+  <div class="qa"><span class="q">3. Что такое Controller?</span><br />
+    <span class="a">Класс, который принимает HTTP-запросы, вызывает нужную логику и возвращает результат — представление, редирект или код ошибки. В работе это <code>ProductController</code> и <code>HomeController</code>.</span></div>
+
+  <div class="qa"><span class="q">4. Что такое View?</span><br />
+    <span class="a">Razor-шаблон, который превращает модель в HTML. Представления лежат в каталоге <code>Views</code> и используют <code>@model</code>, <code>@foreach</code> и Tag Helpers.</span></div>
+
+  <div class="qa"><span class="q">5. Как происходит обработка HTTP-запроса в MVC?</span><br />
+    <span class="a">Запрос проходит middleware, маршрутизация определяет контроллер и действие, действие получает данные из модели, возвращает ViewResult, Razor формирует HTML, ответ отправляется браузеру.</span></div>
+
+  <div class="qa"><span class="q">6. Что такое routing?</span><br />
+    <span class="a">Сопоставление URL с контроллером и действием по шаблону маршрута. В проекте используется <code>{controller=Home}/{action=Index}/{id?}</code>.</span></div>
+
+  <div class="qa"><span class="q">7. Что такое action?</span><br />
+    <span class="a">Публичный метод контроллера, который обрабатывает конкретный запрос. Например, <code>Details(int id)</code> или <code>Create(Product product)</code>.</span></div>
+
+  <div class="qa"><span class="q">8. Для чего используется IActionResult?</span><br />
+    <span class="a">Это абстракция результата действия. Позволяет вернуть <code>ViewResult</code>, <code>RedirectToActionResult</code>, <code>NotFoundResult</code>, <code>BadRequestResult</code> и другие типы ответов.</span></div>
+
+  <div class="qa"><span class="q">9. Что такое Razor View?</span><br />
+    <span class="a">Файл <code>.cshtml</code> со смесью HTML и C#. Razor компилирует его в класс представления и вставляет данные модели в разметку.</span></div>
+
+  <div class="qa"><span class="q">10. Что такое Razor syntax?</span><br />
+    <span class="a">Синтаксис шаблонов: <code>@</code> для выражений и директив, <code>@{ }</code> для блоков кода, <code>@foreach</code> и <code>@if</code> для управления разметкой.</span></div>
+
+  <div class="qa"><span class="q">11. Для чего используется @model?</span><br />
+    <span class="a">Задаёт строго типизированную модель представления. После этого свойства доступны через <code>Model</code>, а ошибки типов выявляются при компиляции.</span></div>
+
+  <div class="qa"><span class="q">12. Для чего используется @foreach?</span><br />
+    <span class="a">Для генерации повторяющейся разметки по коллекции: в каталоге так выводятся карточки и строки таблицы для каждого <code>Product</code>.</span></div>
+
+  <div class="qa"><span class="q">13. Чем GET отличается от POST?</span><br />
+    <span class="a">GET запрашивает данные и передаёт параметры в URL; POST отправляет данные в теле запроса и обычно изменяет состояние. GET идемпотентен, POST — нет.</span></div>
+
+  <div class="qa"><span class="q">14. Для чего используется [HttpPost]?</span><br />
+    <span class="a">Ограничивает действие только POST-запросами. Это защищает от вызова операции через ссылку или случайный GET.</span></div>
+
+  <div class="qa"><span class="q">15. Для чего используется RedirectToAction()?</span><br />
+    <span class="a">Для перенаправления на другое действие контроллера. В работе применяется после Create/Edit/Delete по схеме Post/Redirect/Get.</span></div>
+
+  <div class="qa"><span class="q">16. Что такое Tag Helpers?</span><br />
+    <span class="a">Серверные помощники, которые преобразуют атрибуты Razor-разметки в HTML. Например, <code>asp-action</code> превращается в корректный <code>href</code>, а <code>asp-for</code> — в поля с именем и валидацией.</span></div>
+
+  <div class="qa"><span class="q">17. Для чего используется asp-action?</span><br />
+    <span class="a">Указывает действие, на которое ведёт ссылка или форма. URL генерируется с учётом маршрутизации, без ручного прописывания пути.</span></div>
+
+  <div class="qa"><span class="q">18. Для чего используется asp-route-id?</span><br />
+    <span class="a">Добавляет значение <code>id</code> в route values. Так ссылка <code>asp-action="Details" asp-route-id="@product.Id"</code> ведёт на <code>/Product/Details/1</code>.</span></div>
+
+  <div class="qa"><span class="q">19. Что такое Bootstrap?</span><br />
+    <span class="a">CSS-фреймворк с готовыми компонентами и адаптивной сеткой. В проекте используются navbar, cards, badges, forms, tables и утилиты отступов.</span></div>
+
+  <div class="qa"><span class="q">20. Для чего используется _Layout.cshtml?</span><br />
+    <span class="a">Это общий шаблон страниц: навигация, подключение CSS/JS, подвал и <code>@RenderBody()</code>, куда вставляется содержимое конкретного представления.</span></div>
+
+  <div class="qa"><span class="q">21. Что такое Docker?</span><br />
+    <span class="a">Платформа контейнеризации: приложение упаковывается вместе с зависимостями в образ и запускается изолированно в контейнере.</span></div>
+
+  <div class="qa"><span class="q">22. Для чего нужен Dockerfile?</span><br />
+    <span class="a">Это инструкция сборки образа: базовый образ, копирование файлов, restore, publish, настройка порта и команда запуска.</span></div>
+
+  <div class="qa"><span class="q">23. Что такое container?</span><br />
+    <span class="a">Запущенный экземпляр образа с изолированной файловой системой и процессами. На Render контейнер работает как Web Service.</span></div>
+
+  <div class="qa"><span class="q">24. Почему приложение публикуется как Web Service, а не Static Site?</span><br />
+    <span class="a">ASP.NET Core MVC — серверное приложение: ему нужен процесс .NET, маршрутизация, Razor и обработка POST. Static Site отдаёт только готовые файлы и не может выполнять серверный код.</span></div>
+
+  <div class="qa"><span class="q">25. Для чего используется переменная PORT?</span><br />
+    <span class="a">Render сообщает приложению, на каком порту принимать трафик. Приложение читает <code>PORT</code> и слушает этот порт, по умолчанию 10000.</span></div>
+
+  <div class="qa"><span class="q">26. Почему серверное приложение должно быть доступно на 0.0.0.0?</span><br />
+    <span class="a">Чтобы принимать соединения на всех сетевых интерфейсах контейнера, а не только на loopback. Иначе reverse-proxy Render не сможет достучаться до приложения.</span></div>
+
+  <div class="qa"><span class="q">27. Что происходит при публикации приложения на Render?</span><br />
+    <span class="a">Render клонирует репозиторий, собирает Docker-образ по Dockerfile, запускает контейнер, передаёт ему PORT, проверяет доступность и маршрутизирует HTTPS-трафик на сервис.</span></div>
+
+  <div class="qa"><span class="q">28. Что такое deployment?</span><br />
+    <span class="a">Процесс выпуска новой версии приложения: сборка, запуск и переключение трафика на новый экземпляр.</span></div>
+
+  <div class="qa"><span class="q">29. Что такое automatic deployment?</span><br />
+    <span class="a">Автоматический запуск нового deployment после push в подключённую ветку Git. Render пересобирает образ и обновляет сервис без ручных действий.</span></div>
+
+  <div class="qa"><span class="q">30. Чем локальный запуск отличается от запуска на Render?</span><br />
+    <span class="a">Локально приложение запускается через <code>dotnet run</code> на localhost с development-настройками. На Render оно работает в контейнере, слушает <code>0.0.0.0:$PORT</code>, использует Production-окружение и внешний HTTPS reverse-proxy.</span></div>
+</section>
+
+<section>
+  <h2>14. Вывод</h2>
+  <p>
+    В ходе лабораторной работы было разработано полноценное веб-приложение
+    <strong>«Складской учёт»</strong> на ASP.NET Core MVC 8. Реализованы модель
+    <code>Product</code> с валидацией, in-memory хранилище, контроллер с действиями
+    Index/Details/Create/Edit/Delete, маршрутизация, Razor Views, обработка GET- и
+    POST-запросов, поиск и фильтрация, а также оформление на Bootstrap 5.
+  </p>
+  <p>
+    Приложение проверено локально: главная страница, каталог, карточка позиции,
+    добавление, редактирование, удаление и обработка 404 работают корректно.
+    Подготовлены Dockerfile с multi-stage сборкой, конфигурация <code>render.yaml</code>
+    и README с инструкцией по публикации.
+  </p>
+  <p>
+    В результате освоены принципы MVC, работа с Razor, Tag Helpers, валидацией и
+    маршрутизацией, а также подход к упаковке ASP.NET Core-приложения в Docker и
+    публикации в виде Web Service. Ограничением текущей версии остаётся хранение
+    данных в памяти; перенос в PostgreSQL и завершение деплоя на Render являются
+    следующими шагами.
+  </p>
+
+  <div class="success">
+    <strong>Итог:</strong> все семь блоков WT-4 реализованы на уровне «продвинутый»;
+    для полного закрытия блока публикации осталось подключить аккаунт Render и
+    добавить реальные ссылки и скриншоты deployment.
+  </div>
+</section>
+
+<section>
+  <h2>15. Ссылки и материалы</h2>
+  <table>
+    <thead><tr><th>Материал</th><th>Ссылка / путь</th></tr></thead>
+    <tbody>
+      <tr><td>Git-репозиторий</td><td><code>https://github.com/&lt;ваш-логин&gt;/wt-lab4-4mvc-ostashevskaya</code></td></tr>
+      <tr><td>Опубликованное приложение</td><td><code>https://&lt;имя-сервиса&gt;.onrender.com</code></td></tr>
+      <tr><td>Исходный код</td><td><code>wt-lab4-4mvc-ostashevskaya/</code></td></tr>
+      <tr><td>Dockerfile</td><td><code>Dockerfile</code></td></tr>
+      <tr><td>Конфигурация Render</td><td><code>render.yaml</code></td></tr>
+      <tr><td>Инструкция</td><td><code>README.md</code></td></tr>
+      <tr><td>Скриншоты</td><td><code>docs/screenshots/</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    После выполнения деплоя замените две ссылки выше на реальные адреса, добавьте
+    скриншоты Render Dashboard, Build Logs, Deploy Logs и опубликованного приложения.
+    Эти материалы включаются в итоговый PDF-отчёт и README.md.
+  </div>
+</section>
+
+</body>
+</html>
