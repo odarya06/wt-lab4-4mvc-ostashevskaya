@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 420" role="img" aria-labelledby="warehouseTitle warehouseDesc">
+  <title id="warehouseTitle">Склад</title>
+  <desc id="warehouseDesc">Иллюстрация складского помещения с коробками и стеллажами</desc>
+
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f8fafc" />
+      <stop offset="1" stop-color="#dbe6f3" />
+    </linearGradient>
+    <linearGradient id="roof" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fbbf24" />
+      <stop offset="1" stop-color="#d97706" />
+    </linearGradient>
+    <linearGradient id="door" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#123b63" />
+      <stop offset="1" stop-color="#0b1f36" />
+    </linearGradient>
+    <linearGradient id="box" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6c177" />
+      <stop offset="1" stop-color="#d99a3e" />
+    </linearGradient>
+    <linearGradient id="boxLight" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fde3b8" />
+      <stop offset="1" stop-color="#eab566" />
+    </linearGradient>
+  </defs>
+
+  <ellipse cx="280" cy="380" rx="218" ry="22" fill="#07182b" opacity="0.22" />
+
+  <!-- здание -->
+  <rect x="86" y="142" width="388" height="226" rx="14" fill="url(#wall)" />
+  <rect x="86" y="142" width="388" height="14" rx="7" fill="#cbd5e1" />
+  <polygon points="66,146 280,42 494,146" fill="url(#roof)" />
+  <polygon points="101,139 280,58 459,139" fill="#0b1f36" opacity="0.92" />
+  <rect x="256" y="86" width="48" height="12" rx="6" fill="#f59e0b" opacity="0.9" />
+
+  <!-- окна -->
+  <g fill="#7fb2e5" stroke="#0b1f36" stroke-opacity="0.18" stroke-width="2">
+    <rect x="116" y="178" width="58" height="46" rx="6" />
+    <rect x="192" y="178" width="58" height="46" rx="6" />
+    <rect x="310" y="178" width="58" height="46" rx="6" />
+    <rect x="386" y="178" width="58" height="46" rx="6" />
+  </g>
+  <g stroke="#e2e8f0" stroke-width="3">
+    <line x1="145" y1="178" x2="145" y2="224" />
+    <line x1="221" y1="178" x2="221" y2="224" />
+    <line x1="339" y1="178" x2="339" y2="224" />
+    <line x1="415" y1="178" x2="415" y2="224" />
+  </g>
+
+  <!-- ворота -->
+  <rect x="228" y="250" width="104" height="118" rx="8" fill="url(#door)" />
+  <g stroke="#8fb4d9" stroke-opacity="0.45" stroke-width="3">
+    <line x1="238" y1="272" x2="322" y2="272" />
+    <line x1="238" y1="292" x2="322" y2="292" />
+    <line x1="238" y1="312" x2="322" y2="312" />
+    <line x1="238" y1="332" x2="322" y2="332" />
+  </g>
+  <rect x="228" y="250" width="104" height="10" rx="4" fill="#f59e0b" opacity="0.8" />
+
+  <!-- вывеска -->
+  <rect x="245" y="228" width="70" height="14" rx="7" fill="#0f2742" opacity="0.9" />
+
+  <!-- коробки слева -->
+  <g>
+    <rect x="108" y="292" width="74" height="62" rx="6" fill="url(#box)" />
+    <rect x="139" y="292" width="12" height="62" fill="#fde3b8" opacity="0.75" />
+    <rect x="108" y="318" width="74" height="7" fill="#b97c2b" opacity="0.45" />
+    <rect x="120" y="246" width="58" height="46" rx="5" fill="url(#boxLight)" />
+    <rect x="143" y="246" width="10" height="46" fill="#fef3c7" opacity="0.8" />
+  </g>
+
+  <!-- коробки справа -->
+  <g>
+    <rect x="366" y="302" width="80" height="52" rx="6" fill="url(#boxLight)" />
+    <rect x="400" y="302" width="11" height="52" fill="#fef3c7" opacity="0.8" />
+    <rect x="378" y="262" width="56" height="40" rx="5" fill="url(#box)" />
+    <rect x="400" y="262" width="10" height="40" fill="#fde3b8" opacity="0.7" />
+  </g>
+
+  <!-- паллета -->
+  <g fill="#9a6a2f">
+    <rect x="98" y="354" width="96" height="8" rx="3" />
+    <rect x="108" y="362" width="12" height="8" rx="2" />
+    <rect x="172" y="362" width="12" height="8" rx="2" />
+  </g>
+
+  <!-- тележка -->
+  <g stroke="#0b1f36" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.9">
+    <line x1="335" y1="354" x2="335" y2="316" />
+    <line x1="335" y1="316" x2="312" y2="316" />
+    <line x1="335" y1="354" x2="356" y2="354" />
+  </g>
+  <circle cx="335" cy="366" r="9" fill="#0b1f36" />
+  <circle cx="362" cy="366" r="9" fill="#0b1f36" />
+  <rect x="300" y="306" width="30" height="14" rx="4" fill="#f59e0b" />
+
+  <!-- декоративные искры -->
+  <g fill="#fbbf24" opacity="0.9">
+    <circle cx="476" cy="72" r="5" />
+    <circle cx="502" cy="104" r="3" />
+    <circle cx="70" cy="90" r="4" />
+    <circle cx="48" cy="128" r="3" />
+  </g>
+</svg>

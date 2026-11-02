@@ -1,0 +1,45 @@
+@model Product
+@{
+    ViewData["Title"] = "Редактирование товара";
+}
+
+<div class="container py-4 py-lg-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Каталог</a></li>
+            <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@Model.Id">@Model.Name</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Редактирование</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-9">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4 p-lg-5">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <span class="category-icon category-icon-lg" aria-hidden="true">✏️</span>
+                        <div>
+                            <h1 class="h2 fw-bold mb-0">Редактирование товара</h1>
+                            <p class="text-muted mb-0">Позиция #@Model.Id · @Model.Name</p>
+                        </div>
+                    </div>
+
+                    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <partial name="_ProductForm" model="Model" />
+
+                        <div class="d-flex flex-wrap gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill px-4">Сохранить изменения</button>
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary btn-lg rounded-pill px-4">Отмена</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

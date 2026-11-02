@@ -1,0 +1,130 @@
+﻿@model HomeViewModel
+@{
+    ViewData["Title"] = "Главная";
+}
+
+<section class="hero-section">
+    <div class="container py-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+                <span class="badge rounded-pill hero-badge mb-3">WT-4 · ASP.NET Core MVC</span>
+                <h1 class="display-4 fw-bold lh-sm mb-4">
+                    Порядок на складе<br />
+                    начинается с учёта
+                </h1>
+                <p class="lead text-white-50 mb-4">
+                    Учебное веб-приложение для управления складскими позициями: каталог товаров,
+                    остатки, поставщики и стоимость запасов — в одном интерфейсе.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a class="btn btn-warning btn-lg px-4 fw-semibold" asp-controller="Product" asp-action="Index">
+                        Перейти к товарам
+                    </a>
+                    <a class="btn btn-outline-light btn-lg px-4" asp-controller="Product" asp-action="Create">
+                        Добавить позицию
+                    </a>
+                </div>
+
+                <div class="row g-3 mt-5">
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-card">
+                            <div class="stat-value">@Model.TotalProducts</div>
+                            <div class="stat-label">позиций</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-card">
+                            <div class="stat-value">@Model.TotalUnits</div>
+                            <div class="stat-label">единиц</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-card">
+                            <div class="stat-value">@Model.CategoryCount</div>
+                            <div class="stat-label">категорий</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-card">
+                            <div class="stat-value">@Model.TotalValue.ToString("N0")</div>
+                            <div class="stat-label">₽ на складе</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 text-center">
+                <img src="~/images/warehouse.svg" class="hero-image img-fluid" alt="Иллюстрация складского помещения" />
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container py-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Последние поступления</h2>
+            <p class="text-muted mb-0">Три позиции, которые поступили на склад недавно</p>
+        </div>
+        <a class="btn btn-outline-primary" asp-controller="Product" asp-action="Index">Весь каталог →</a>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var product in Model.RecentProducts)
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <article class="card product-card h-100 border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="category-icon" aria-hidden="true">@DisplayHelper.CategoryIcon(product.Category)</span>
+                            <span class="badge rounded-pill @DisplayHelper.StatusBadgeClass(product)">@product.StockStatus</span>
+                        </div>
+                        <div class="small text-muted mb-1">@product.Category · @product.Sku</div>
+                        <h3 class="h5 card-title fw-semibold">@product.Name</h3>
+                        <p class="text-muted small mb-3">@product.Description</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fs-5 fw-bold text-primary">@product.Price.ToString("N0") ₽</span>
+                            <a class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                               asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">
+                                Подробнее
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        }
+    </div>
+
+    @if (Model.LowStockCount > 0)
+    {
+        <div class="alert alert-warning d-flex align-items-center gap-2 mt-4 rounded-4" role="alert">
+            <span aria-hidden="true">⚠️</span>
+            <div>Позиций с низким остатком (10 единиц и меньше): <strong>@Model.LowStockCount</strong>. Стоит пополнить запас.</div>
+        </div>
+    }
+</section>
+
+<section class="container pb-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="feature-card h-100 rounded-4 p-4">
+                <div class="feature-icon mb-3" aria-hidden="true">📦</div>
+                <h3 class="h5 fw-semibold">Каталог и поиск</h3>
+                <p class="text-muted mb-0">Поиск по названию, артикулу и поставщику, фильтры по категории и остатку.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card h-100 rounded-4 p-4">
+                <div class="feature-icon mb-3" aria-hidden="true">📋</div>
+                <h3 class="h5 fw-semibold">Карточка позиции</h3>
+                <p class="text-muted mb-0">Подробная информация: цена, количество, поставщик, статус и стоимость остатка.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card h-100 rounded-4 p-4">
+                <div class="feature-icon mb-3" aria-hidden="true">✏️</div>
+                <h3 class="h5 fw-semibold">Учёт без базы данных</h3>
+                <p class="text-muted mb-0">Добавление, редактирование и удаление позиций. Данные хранятся в памяти приложения.</p>
+            </div>
+        </div>
+    </div>
+</section>

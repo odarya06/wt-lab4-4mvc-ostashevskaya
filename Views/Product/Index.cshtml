@@ -1,0 +1,194 @@
+@model List<Product>
+@{
+    ViewData["Title"] = "Каталог товаров";
+    var categories = (IReadOnlyList<string>)ViewBag.Categories;
+    var search = ViewBag.Search as string;
+    var selectedCategory = ViewBag.SelectedCategory as string;
+    var selectedStatus = ViewBag.SelectedStatus as string;
+}
+
+<div class="container py-4 py-lg-5">
+    @if (TempData["Success"] is string successMessage)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm" role="alert">
+            <span class="me-1" aria-hidden="true">✅</span> @successMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+        </div>
+    }
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <h1 class="fw-bold mb-1">Каталог товаров</h1>
+            <p class="text-muted mb-0">
+                Система управления складом · найдено <strong>@Model.Count</strong> из @ViewBag.TotalCount позиций
+            </p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary btn-lg px-4 rounded-pill shadow-sm">+ Добавить товар</a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-3 p-lg-4">
+            <form method="get" asp-action="Index" class="row g-3 align-items-end">
+                <div class="col-12 col-lg-4">
+                    <label class="form-label small text-muted mb-1" for="search">Поиск</label>
+                    <input id="search" name="search" value="@search" class="form-control"
+                           placeholder="Название, артикул или поставщик" />
+                </div>
+                <div class="col-6 col-lg-3">
+                    <label class="form-label small text-muted mb-1" for="category">Категория</label>
+                    <select id="category" name="category" class="form-select">
+                        <option value="">Все категории</option>
+                        @foreach (var category in categories)
+                        {
+                            if (selectedCategory == category)
+                            {
+                                <option value="@category" selected>@category</option>
+                            }
+                            else
+                            {
+                                <option value="@category">@category</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <label class="form-label small text-muted mb-1" for="status">Остаток</label>
+                    <select id="status" name="status" class="form-select">
+                        <option value="">Любой остаток</option>
+                        @if (selectedStatus == "in-stock")
+                        {
+                            <option value="in-stock" selected>В наличии</option>
+                        }
+                        else
+                        {
+                            <option value="in-stock">В наличии</option>
+                        }
+                        @if (selectedStatus == "low-stock")
+                        {
+                            <option value="low-stock" selected>Низкий остаток (≤ 10)</option>
+                        }
+                        else
+                        {
+                            <option value="low-stock">Низкий остаток (≤ 10)</option>
+                        }
+                        @if (selectedStatus == "out-of-stock")
+                        {
+                            <option value="out-of-stock" selected>Нет в наличии</option>
+                        }
+                        else
+                        {
+                            <option value="out-of-stock">Нет в наличии</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-12 col-lg-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1">Найти</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary" title="Сбросить фильтры">↺</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="card border-0 shadow-sm rounded-4 text-center py-5">
+            <div class="card-body">
+                <div class="display-5 mb-3" aria-hidden="true">🔍</div>
+                <h2 class="h4">Ничего не найдено</h2>
+                <p class="text-muted">Попробуйте изменить условия поиска или сбросить фильтры.</p>
+                <a asp-action="Index" class="btn btn-outline-primary rounded-pill px-4">Сбросить фильтры</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var product in Model)
+            {
+                <div class="col-12 col-md-6 col-lg-4">
+                    <article class="card product-card h-100 border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="category-icon" aria-hidden="true">@DisplayHelper.CategoryIcon(product.Category)</span>
+                                <span class="badge rounded-pill @DisplayHelper.StatusBadgeClass(product)">@product.StockStatus</span>
+                            </div>
+
+                            <div class="small text-muted mb-1">@product.Category</div>
+                            <h2 class="h5 card-title fw-semibold mb-2">@product.Name</h2>
+                            <div class="small text-muted mb-3">
+                                <span class="me-2">Артикул: @product.Sku</span>
+                                @if (!string.IsNullOrWhiteSpace(product.Supplier))
+                                {
+                                    <span>· @product.Supplier</span>
+                                }
+                            </div>
+
+                            <p class="text-muted small flex-grow-1">@product.Description</p>
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <div class="fs-5 fw-bold text-primary">@product.Price.ToString("N0") ₽</div>
+                                    <div class="small text-muted">Остаток: @product.Quantity шт.</div>
+                                </div>
+                                <span class="badge bg-light text-dark border">ID: @product.Id</span>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <a asp-action="Details" asp-route-id="@product.Id"
+                                   class="btn btn-outline-primary btn-sm flex-grow-1 rounded-pill">Подробнее</a>
+                                <a asp-action="Edit" asp-route-id="@product.Id"
+                                   class="btn btn-light btn-sm rounded-pill border" title="Редактировать">✏️</a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            }
+        </div>
+
+        <div class="mt-5">
+            <button class="btn btn-link text-decoration-none px-0" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#tableView" aria-expanded="false" aria-controls="tableView">
+                Показать таблицей
+            </button>
+            <div class="collapse" id="tableView">
+                <div class="card border-0 shadow-sm rounded-4 mt-2">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Наименование</th>
+                                    <th>Артикул</th>
+                                    <th>Категория</th>
+                                    <th class="text-end">Цена</th>
+                                    <th class="text-end">Остаток</th>
+                                    <th>Статус</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in Model)
+                                {
+                                    <tr>
+                                        <td class="text-muted">@product.Id</td>
+                                        <td class="fw-semibold">@product.Name</td>
+                                        <td>@product.Sku</td>
+                                        <td>@product.Category</td>
+                                        <td class="text-end">@product.Price.ToString("N0") ₽</td>
+                                        <td class="text-end">@product.Quantity шт.</td>
+                                        <td>
+                                            <span class="badge rounded-pill @DisplayHelper.StatusBadgeClass(product)">@product.StockStatus</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-sm btn-outline-primary">Открыть</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

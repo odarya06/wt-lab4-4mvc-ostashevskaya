@@ -1,0 +1,115 @@
+@model Product
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container py-4 py-lg-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Каталог</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <article class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4 p-lg-5">
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="category-icon category-icon-lg" aria-hidden="true">@DisplayHelper.CategoryIcon(Model.Category)</span>
+                            <div>
+                                <div class="text-muted small">@Model.Category · артикул @Model.Sku</div>
+                                <h1 class="h2 fw-bold mb-0">@Model.Name</h1>
+                            </div>
+                        </div>
+                        <span class="badge rounded-pill fs-6 @DisplayHelper.StatusBadgeClass(Model)">@Model.StockStatus</span>
+                    </div>
+
+                    <p class="text-muted mb-4">@Model.Description</p>
+
+                    <h2 class="h6 text-uppercase text-muted fw-semibold mb-3">Характеристики</h2>
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="info-tile rounded-3 p-3 h-100">
+                                <div class="small text-muted">Идентификатор</div>
+                                <div class="fw-semibold">#@Model.Id</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-tile rounded-3 p-3 h-100">
+                                <div class="small text-muted">Артикул</div>
+                                <div class="fw-semibold">@Model.Sku</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-tile rounded-3 p-3 h-100">
+                                <div class="small text-muted">Категория</div>
+                                <div class="fw-semibold">@Model.Category</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-tile rounded-3 p-3 h-100">
+                                <div class="small text-muted">Поставщик</div>
+                                <div class="fw-semibold">@(string.IsNullOrWhiteSpace(Model.Supplier) ? "Не указан" : Model.Supplier)</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-tile rounded-3 p-3 h-100">
+                                <div class="small text-muted">Количество на складе</div>
+                                <div class="fw-semibold">@Model.Quantity шт.</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-tile rounded-3 p-3 h-100">
+                                <div class="small text-muted">Дата поступления</div>
+                                <div class="fw-semibold">@Model.ReceivedAt.ToString("dd.MM.yyyy")</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <div class="small text-muted mb-1">Цена за единицу</div>
+                    <div class="display-6 fw-bold text-primary mb-3">@Model.Price.ToString("N0") ₽</div>
+
+                    <div class="d-flex justify-content-between py-2 border-top">
+                        <span class="text-muted">Остаток</span>
+                        <span class="fw-semibold">@Model.Quantity шт.</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-top">
+                        <span class="text-muted">Стоимость остатка</span>
+                        <span class="fw-semibold">@Model.TotalValue.ToString("N0") ₽</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-top border-bottom mb-4">
+                        <span class="text-muted">Доступен к отгрузке</span>
+                        <span class="fw-semibold">@(Model.IsAvailable ? "Да" : "Нет")</span>
+                    </div>
+
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary w-100 mb-2 rounded-pill">
+                        ✏️ Редактировать
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-secondary w-100 rounded-pill">
+                        ← Назад к списку
+                    </a>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h2 class="h6 text-uppercase text-muted fw-semibold mb-3">Опасная зона</h2>
+                    <p class="small text-muted">Удаление позиции необратимо. Данные хранятся только в памяти приложения.</p>
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
+                          onsubmit="return confirm('Удалить позицию «@Model.Name»?');">
+                        <button type="submit" class="btn btn-outline-danger w-100 rounded-pill">Удалить позицию</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
